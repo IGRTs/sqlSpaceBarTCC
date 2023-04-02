@@ -117,3 +117,20 @@ create table tblComentarios
     conteudo_comentario varchar(200) not null,
     data_comentario     datetime     not null
 )
+
+create table tblIcon(
+cod_icon int primary key IDENTITY(1,1),
+img nvarchar(100)
+)
+
+create table tblImg_comprovante(
+cod_img int primary key IDENTITY(1,1),
+img nvarchar(100),
+img2 nvarchar(100)
+)
+
+create table tblImg_post(
+cod_imgpost int primary key IDENTITY(1,1),
+img nvarchar(100),
+img2 nvarchar(100)
+)
