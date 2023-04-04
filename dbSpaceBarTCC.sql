@@ -1,81 +1,71 @@
-create table tblDenuncia
-(
-	cod_denuncia int identity,
-	usuario_denunciado int,
-	post_denunciado int,
-	comentario_denunciado int,
-	motivo varchar(255) not null,
-	status_denuncia varchar(20) default 'pendente' not null,
-	data_denuncia date not null,
-	primary key (cod_denuncia),
-	check ([status_denuncia]='ignorado' OR [status_denuncia]='resolvido' OR [status_denuncia]='pendente'),
-);
+CREATE DATABASE SpaceBar
+GO
+
+Use SpaceBar		
+GO
 
 create table tblIcon
 (
-	cod_icon int identity,
-	img nvarchar(100),
-	primary key (cod_icon)
+	cod_icon int identity primary key,
+	caminho_img nvarchar(500)
 );
 
 create table tblImg_comprovante
 (
-	cod_img int identity,
-	img nvarchar(100),
-	img2 nvarchar(100),
-	primary key (cod_img)
+	cod_img int identity primary key,
+	caminho_img nvarchar(500)
+
 );
 
 create table tblImg_post
 (
-	cod_imgpost int identity,
-	img nvarchar(100),
-	img2 nvarchar(100),
-	primary key (cod_imgpost)
+	cod_imgpost int identity primary key,
+	caminho_img nvarchar(500)
 );
 
 create table tipo_usuario
 (
-	cod_tipo int identity,
+	cod_tipo int primary key identity,
 	descricao varchar(30),
-	primary key (cod_tipo)
 );
 
 create table tblUsuario
 (
-	cod_usuario int identity,
+	cod_usuario int primary key identity,
+	cod_icon int foreign key references tblIcon,
 	cod_tipo int,
-	nome_usuario varchar(30) not null,
-	login_usuario varchar(20) not null,
-	senha_usuario varchar(10) not null,
-	email_usuario varchar(30) not null,
+	nome_usuario varchar(30),
+	login_usuario varchar(20),
+	senha_usuario varchar(10),
+	email_usuario varchar(30),
 	pais_usuario char(2),
 	cel_usuario varchar(13),
 	icon_usuario varbinary(max),
 	data_criacao date not null,
+	desc_perfil_usuario varchar(150),
+
+	/*verificado*/
 	profissao varchar(20),
-	img_comprovante1 varbinary(max),
-	img_comprovante2 varbinary(max),
+	cod_img int foreign key references tblImg_comprovante,
+
+	/*criador de conteúdo*/
 	data_nasc date,
 	genero varchar(10),
-	desc_perfil_usuario varchar(150),
-	primary key (cod_usuario),
+
 	foreign key (cod_tipo) references tipo_usuario
 );
 
 create table tblPost
 (
-	cod_post int identity,
+	cod_post int primary key identity,
+	cod_imgpost int foreign key references tblImg_post,
 	cod_usuario int,
 	titulo_post varchar(300) not null,
-	img_post1 varbinary(max),
-	img_post2 varbinary(max),
 	descricao_post varchar(100),
 	curtidas_post int,
 	comentarios_post int,
 	data_post datetime not null,
 	verificado bit default 0 not null,
-	primary key (cod_post),
 	foreign key (cod_usuario) references tblUsuario,
 );
 
@@ -101,3 +91,24 @@ create table tblSeguidores
 	foreign key (id_usuario_seguido) references tblUsuario
 );
 
+create table tblDenuncia
+(
+	cod_denuncia int identity,
+	usuario_denunciado int,
+	post_denunciado int,
+	comentario_denunciado int,
+	motivo varchar(255) not null,
+	status_denuncia varchar(20) default 'pendente' not null,
+	data_denuncia date not null,
+	primary key (cod_denuncia),
+	check ([status_denuncia]='ignorado' OR [status_denuncia]='resolvido' OR [status_denuncia]='pendente'),
+);
+
+SET IDENTITY_INSERT tipo_usuario ON;
+
+insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuário comum')
+insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
+insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
+
+select * from tipo_usuario
