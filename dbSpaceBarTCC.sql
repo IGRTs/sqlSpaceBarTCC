@@ -85,10 +85,10 @@ create table tblSeguidores
 (
 	indice_segui int identity,
 	id_usuario_seguidor int not null,
-	id_usuario_seguido int not null,
+	id_usuario_alvo int not null,
 	primary key (indice_segui),
 	foreign key (id_usuario_seguidor) references tblUsuario,
-	foreign key (id_usuario_seguido) references tblUsuario
+	foreign key (id_usuario_alvo) references tblUsuario
 );
 
 create table tblDenuncia
@@ -112,3 +112,11 @@ insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
 insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
 
 select * from tipo_usuario
+
+create table tblPostagemCurtidas
+(
+    tblPostagemCurtidas_cod_usuario int,
+    tblPostagemCurtidas_cod_post int,
+    foreign key (tblPostagemCurtidas_cod_usuario) references tblUsuario,
+    foreign key (tblPostagemCurtidas_cod_post) references tblPost
+)
