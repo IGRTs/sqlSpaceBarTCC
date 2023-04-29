@@ -72,7 +72,6 @@ create table tblSeguidores
 	id_usuario_alvo int not null,
 	primary key (indice_segui),
 	foreign key (id_usuario_seguidor) references tblUsuario,
-	foreign key (id_usuario_seguido) references tblUsuario
 	foreign key (id_usuario_alvo) references tblUsuario
 );
 
