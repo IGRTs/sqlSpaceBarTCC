@@ -4,24 +4,6 @@ GO
 Use SpaceBar		
 GO
 
-create table tblIcon
-(
-	cod_icon int identity primary key,
-	caminho_img nvarchar(500)
-);
-
-create table tblImg_comprovante
-(
-	cod_img int identity primary key,
-	caminho_img nvarchar(500)
-
-);
-
-create table tblImg_post
-(
-	cod_imgpost int identity primary key,
-	caminho_img nvarchar(500)
-);
 
 create table tipo_usuario
 (
@@ -32,7 +14,6 @@ create table tipo_usuario
 create table tblUsuario
 (
 	cod_usuario int primary key identity,
-	cod_icon int foreign key references tblIcon,
 	cod_tipo int,
 	nome_usuario varchar(30),
 	login_usuario varchar(20),
@@ -41,12 +22,14 @@ create table tblUsuario
 	pais_usuario char(2),
 	cel_usuario varchar(13),
 	icon_usuario varbinary(max),
+	imgfundo_usuario varbinary (max),
 	data_criacao date not null,
-	desc_perfil_usuario varchar(150),
+	bio_usuario varchar(150),
 
 	/*verificado*/
 	profissao varchar(20),
-	cod_img int foreign key references tblImg_comprovante,
+	img_comprovante varbinary (max),
+	img_comprovante2 varbinary (max),
 
 	/*criador de conteúdo*/
 	data_nasc date,
@@ -58,10 +41,11 @@ create table tblUsuario
 create table tblPost
 (
 	cod_post int primary key identity,
-	cod_imgpost int foreign key references tblImg_post,
 	cod_usuario int,
 	titulo_post varchar(300) not null,
-	descricao_post varchar(100),
+	texto_post varchar(100),
+	img_post VARBINARY(max),
+	img_post2 VARBINARY(max),
 	curtidas_post int,
 	comentarios_post int,
 	data_post datetime not null,
@@ -106,9 +90,12 @@ create table tblDenuncia
 
 SET IDENTITY_INSERT tipo_usuario ON;
 
-insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuário comum')
-insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
-insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
+insert into tipo_usuario(cod_tipo,descricao) values(1, 'Criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(2, 'Verificado')
+insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado e criador de conteúdo')
 insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
 
 select * from tipo_usuario
+
+select * from tblUsuario
+
