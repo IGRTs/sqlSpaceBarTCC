@@ -138,8 +138,21 @@ AS
 CREATE PROCEDURE GetPost
 AS
     SELECT * FROM tblPost
--- verificar se um post especifico e´verificado (true ou false)
+-- verificar se um post especifico é verificado (true ou false)
+
 CREATE PROCEDURE GetPostVerified
     @cod_post int
 AS
     SELECT verificado FROM tblPost WHERE cod_post = @cod_post
+GO
+CREATE PROCEDURE GetPostQuantityLikes
+    @postID int
+AS
+    SELECT COUNT(tblPostagemCurtidas_cod_usuario) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postID
+GO
+CREATE PROCEDURE CheckUserHasLiked
+    @postId int,
+    @userId int
+AS
+    SELECT COUNT(*) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+GO
