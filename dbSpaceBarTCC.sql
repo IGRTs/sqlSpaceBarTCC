@@ -17,7 +17,7 @@ create table tblUsuario
 	cod_tipo int,
 	nome_usuario varchar(30),
 	login_usuario varchar(20),
-	senha_usuario varchar(10),
+	senha_usuario varchar(100),
 	email_usuario varchar(30),
 	pais_usuario varchar(30),
 	cel_usuario varchar(13),
@@ -131,8 +131,8 @@ Create Procedure InsertInscrever
 @login varchar(20),
 @email varchar(30),
 @cel varchar (13),
-@pais varchar(2),
-@senha varchar (10),
+@pais varchar(30),
+@senha varchar (100),
 @data date
 as
 begin
