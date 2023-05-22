@@ -31,10 +31,6 @@ create table tblUsuario
 	img_comprovante varbinary (max),
 	img_comprovante2 varbinary (max),
 
-	/*criador de conteúdo*/
-	data_nasc date,
-	genero varchar(10),
-
 	foreign key (cod_tipo) references tipo_usuario
 );
 
@@ -140,6 +136,19 @@ begin
 end
 
 
+/*Create procedure SelectCodTipo */
+Create procedure SelectCodTipo
+@codUsuarioConectado int
+as
+begin
+	select cod_tipo
+	from tblUsuario
+	WHERE cod_usuario = @codUsuarioConectado
+end
+
+
 select * from tblUsuario
 
-Delete from tblUsuario where cod_usuario = 4
+Update tblUsuario set cod_tipo=3 where cod_usuario=7
+
+Delete from tblUsuario where cod_usuario = 11
