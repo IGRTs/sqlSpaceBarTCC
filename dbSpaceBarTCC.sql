@@ -4,25 +4,6 @@ GO
 Use SpaceBar		
 GO
 
-create table tblIcon
-(
-	cod_icon int identity primary key,
-	caminho_img nvarchar(500)
-);
-GO
-create table tblImg_comprovante
-(
-	cod_img int identity primary key,
-	caminho_img nvarchar(500)
-
-);
-GO
-create table tblImg_post
-(
-	cod_imgpost int identity primary key,
-	caminho_img nvarchar(500)
-);
-GO
 create table tipo_usuario
 (
 	cod_tipo int primary key identity,
@@ -32,7 +13,6 @@ GO
 create table tblUsuario
 (
 	cod_usuario int primary key identity,
-	cod_icon int foreign key references tblIcon,
 	cod_tipo int,
 	nome_usuario varchar(30),
 	login_usuario varchar(20),
@@ -41,14 +21,16 @@ create table tblUsuario
 	pais_usuario char(2),
 	cel_usuario varchar(13),
 	icon_usuario varbinary(max),
+	imgfundo_usuario varbinary (max),
 	data_criacao date not null,
-	desc_perfil_usuario varchar(150),
+	bio_usuario varchar(150),
 
 	/*verificado*/
 	profissao varchar(20),
-	cod_img int foreign key references tblImg_comprovante,
+	img_comprovante varbinary (max),
+	img_comprovante2 varbinary (max),
 
-	/*criador de conteúdo*/
+	/*criador de conteÃºdo*/
 	data_nasc date,
 	genero varchar(10),
 
@@ -58,10 +40,11 @@ GO
 create table tblPost
 (
 	cod_post int primary key identity,
-	cod_imgpost int foreign key references tblImg_post,
 	cod_usuario int,
 	titulo_post varchar(300) not null,
-	descricao_post varchar(100),
+	texto_post varchar(100),
+	img_post VARBINARY(max),
+	img_post2 VARBINARY(max),
 	curtidas_post int,
 	comentarios_post int,
 	data_post datetime not null,
@@ -106,11 +89,12 @@ create table tblDenuncia
 GO
 SET IDENTITY_INSERT tipo_usuario ON;
 GO
-insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuário comum')
-insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(1, 'UsuÃ¡rio comum')
+insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteÃºdo')
 insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
 insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
 GO
+
 create table tblPostagemCurtidas
 (
     tblPostagemCurtidas_cod_usuario int,
@@ -125,7 +109,7 @@ AS
     SELECT cod_post FROM tblPost ORDER BY cod_post ASC
 GO
 
--- pega todo o conteúdo de um post junto com as informações de quem o criou
+-- pega todo o conteÃºdo de um post junto com as informaÃ§Ãµes de quem o criou
 CREATE PROCEDURE GetPostAndAuthor
 AS
     SELECT * from tblPost INNER JOIN tblUsuario tU on tU.cod_usuario = tblPost.cod_usuario
@@ -138,7 +122,7 @@ AS
 CREATE PROCEDURE GetPost
 AS
     SELECT * FROM tblPost
--- verificar se um post especifico é verificado (true ou false)
+-- verificar se um post especifico Ã© verificado (true ou false)
 
 CREATE PROCEDURE GetPostVerified
     @cod_post int
