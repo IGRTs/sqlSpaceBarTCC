@@ -17,9 +17,9 @@ create table tblUsuario
 	cod_tipo int,
 	nome_usuario varchar(30),
 	login_usuario varchar(20),
-	senha_usuario varchar(10),
+	senha_usuario varchar(100),
 	email_usuario varchar(30),
-	pais_usuario char(2),
+	pais_usuario varchar(30),
 	cel_usuario varchar(13),
 	icon_usuario varbinary(max),
 	imgfundo_usuario varbinary (max),
@@ -30,10 +30,6 @@ create table tblUsuario
 	profissao varchar(20),
 	img_comprovante varbinary (max),
 	img_comprovante2 varbinary (max),
-
-	/*criador de conteúdo*/
-	data_nasc date,
-	genero varchar(10),
 
 	foreign key (cod_tipo) references tipo_usuario
 );
@@ -88,24 +84,71 @@ create table tblDenuncia
 	check ([status_denuncia]='ignorado' OR [status_denuncia]='resolvido' OR [status_denuncia]='pendente'),
 );
 
+
 SET IDENTITY_INSERT tipo_usuario ON;
 
-insert into tipo_usuario(cod_tipo,descricao) values(1, 'Criador de conteúdo')
-insert into tipo_usuario(cod_tipo,descricao) values(2, 'Verificado')
-insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado e criador de conteúdo')
-insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
+insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuario comum')
+insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
+insert into tipo_usuario(cod_tipo,descricao) values(4, 'Verificado/criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(5, 'ADM')
 
 select * from tipo_usuario
 
-<<<<<<< HEAD
-select * from tblUsuario
 
-=======
+
 create table tblPostagemCurtidas
 (
     tblPostagemCurtidas_cod_usuario int,
+
     tblPostagemCurtidas_cod_post int,
     foreign key (tblPostagemCurtidas_cod_usuario) references tblUsuario,
     foreign key (tblPostagemCurtidas_cod_post) references tblPost
-)
->>>>>>> c98940a679e5fdd4b4bc615b90f4227e292af69d
+
+
+
+);
+
+
+--procedure inscrever--
+Create Procedure SelectVerificarLoginEmail
+    @login varchar(20),
+    @email varchar(30)
+as
+begin
+	select login_usuario, email_usuario
+	from tblUsuario
+	WHERE login_usuario = @login OR email_usuario = @email
+end
+
+Create Procedure InsertInscrever
+@tipo_usu int,
+@nome varchar (30),
+@login varchar(20),
+@email varchar(30),
+@cel varchar (13),
+@pais varchar(30),
+@senha varchar (100),
+@data date
+as
+begin
+	insert into tblUsuario(cod_tipo,nome_usuario,login_usuario,email_usuario,cel_usuario,pais_usuario,senha_usuario,data_criacao) values (@tipo_usu,@nome, @login, @email, @cel, @pais, @senha, @data);
+end
+
+
+/*Create procedure SelectCodTipo */
+Create procedure SelectCodTipo
+@codUsuarioConectado int
+as
+begin
+	select cod_tipo
+	from tblUsuario
+	WHERE cod_usuario = @codUsuarioConectado
+end
+
+
+select * from tblUsuario
+
+Update tblUsuario set cod_tipo=3 where cod_usuario=7
+
+Delete from tblUsuario where cod_usuario = 11
