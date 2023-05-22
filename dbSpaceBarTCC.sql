@@ -4,13 +4,12 @@ GO
 Use SpaceBar		
 GO
 
-
 create table tipo_usuario
 (
 	cod_tipo int primary key identity,
 	descricao varchar(30),
 );
-
+GO
 create table tblUsuario
 (
 	cod_usuario int primary key identity,
@@ -30,10 +29,9 @@ create table tblUsuario
 	profissao varchar(20),
 	img_comprovante varbinary (max),
 	img_comprovante2 varbinary (max),
-
 	foreign key (cod_tipo) references tipo_usuario
 );
-
+GO
 create table tblPost
 (
 	cod_post int primary key identity,
@@ -48,7 +46,7 @@ create table tblPost
 	verificado bit default 0 not null,
 	foreign key (cod_usuario) references tblUsuario,
 );
-
+GO
 create table tblComentarios
 (
 	cod_comentario int identity,
@@ -60,7 +58,7 @@ create table tblComentarios
 	foreign key (cod_post) references tblPost,
 	foreign key (cod_usuario) references tblUsuario
 );
-
+GO
 create table tblSeguidores
 (
 	indice_segui int identity,
@@ -70,7 +68,7 @@ create table tblSeguidores
 	foreign key (id_usuario_seguidor) references tblUsuario,
 	foreign key (id_usuario_alvo) references tblUsuario
 );
-
+GO
 create table tblDenuncia
 (
 	cod_denuncia int identity,
@@ -83,19 +81,14 @@ create table tblDenuncia
 	primary key (cod_denuncia),
 	check ([status_denuncia]='ignorado' OR [status_denuncia]='resolvido' OR [status_denuncia]='pendente'),
 );
-
-
+GO
 SET IDENTITY_INSERT tipo_usuario ON;
 
 insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuario comum')
-insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conte�do')
+insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
 insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
-insert into tipo_usuario(cod_tipo,descricao) values(4, 'Verificado/criador de conte�do')
+insert into tipo_usuario(cod_tipo,descricao) values(4, 'Verificado/criador de conteúdo')
 insert into tipo_usuario(cod_tipo,descricao) values(5, 'ADM')
-
-select * from tipo_usuario
-
-
 
 create table tblPostagemCurtidas
 (
@@ -104,12 +97,109 @@ create table tblPostagemCurtidas
     tblPostagemCurtidas_cod_post int,
     foreign key (tblPostagemCurtidas_cod_usuario) references tblUsuario,
     foreign key (tblPostagemCurtidas_cod_post) references tblPost
-
-
-
 );
+GO
+-- pega todos os cod_post em ordem crescente
+CREATE PROCEDURE GetCodPostagensCrescente
+AS
+    SELECT cod_post FROM tblPost ORDER BY cod_post ASC
+GO
 
+-- pega todo o conteÃºdo de um post junto com as informaÃ§Ãµes de quem o criou
+CREATE PROCEDURE GetPostAndAuthor
+AS
+    SELECT * from tblPost INNER JOIN tblUsuario tU on tU.cod_usuario = tblPost.cod_usuario
+GO
+-- obtem a quantidade de posts que tem no banco de dados inteiro
+CREATE PROCEDURE GetPostsQuantity
+AS
+    SELECT COUNT(cod_post) FROM tblPost
+-- obtem todos os dados de todos os posts
+CREATE PROCEDURE GetPost
+AS
+    SELECT * FROM tblPost
+-- verificar se um post especifico Ã© verificado (true ou false)
 
+CREATE PROCEDURE GetPostVerified
+    @cod_post int
+AS
+    SELECT verificado FROM tblPost WHERE cod_post = @cod_post
+GO
+CREATE PROCEDURE GetPostQuantityLikes
+    @postID int
+AS
+    SELECT COUNT(tblPostagemCurtidas_cod_usuario) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postID
+GO
+CREATE PROCEDURE CheckUserHasLiked
+    @postId int,
+    @userId int
+AS
+    SELECT COUNT(*) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+GO
+CREATE PROCEDURE GetAuthorPost
+    @postId int
+AS
+    -- select the cod_usuario from tblUsuario where the cod_usuario equals to the creator of an specific post --
+    SELECT cod_usuario FROM tblPost WHERE cod_post = @postId
+GO
+CREATE PROCEDURE GetUserInformation
+    @userId int
+AS
+    SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+GO
+CREATE PROCEDURE DeleteLike
+    @postId int,
+    @userId int
+AS
+    DELETE FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+GO
+CREATE PROCEDURE AddLike
+    @postId int,
+    @userId int
+AS
+    INSERT INTO tblPostagemCurtidas (tblPostagemCurtidas_cod_post, tblPostagemCurtidas_cod_usuario) VALUES (@postId, @userId)
+GO
+CREATE PROCEDURE GetAllInfoAndPostsByAuthor
+    @postAuthorID int
+AS
+    SELECT * FROM tblPost INNER JOIN tblUsuario tU ON tU.cod_usuario = tblPost.cod_usuario WHERE tblPost.[cod_usuario] = @postAuthorID
+GO
+CREATE PROCEDURE GetuserInformation
+    @userId int
+AS
+    SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+GO
+CREATE PROCEDURE GetQuantityFollowing
+    @userId int
+AS
+    SELECT COUNT(*) AS FollowingCount FROM tblSeguidores WHERE id_usuario_seguidor = @userId
+GO
+CREATE PROCEDURE GetQuantityFollowers
+    @userId int
+AS
+    SELECT COUNT(*) AS FollowersCount FROM tblSeguidores WHERE id_usuario_alvo = @userId
+GO
+CREATE PROCEDURE FollowUser
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    INSERT INTO tblSeguidores (id_usuario_seguidor,id_usuario_alvo) VALUES (@usuario_seguidor, @usuario_alvo)
+GO
+
+-- verifica se o seguidor_alvo ja está sendo seguindo pelo usuário logado
+CREATE PROCEDURE VerifyIfUserIsAlreadyBeingFollowed
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    -- verifica se o usuario seguidor (logado) segue o usuario alvo (perfil desejado) --
+    SELECT COUNT(id_usuario_seguidor) FROM tblSeguidores WHERE id_usuario_alvo = @usuario_alvo AND id_usuario_seguidor = @usuario_seguidor
+GO
+CREATE PROCEDURE UnfollowUser
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    DELETE FROM tblSeguidores WHERE id_usuario_seguidor = @usuario_seguidor AND id_usuario_alvo = @usuario_alvo
+GO
 --procedure inscrever--
 Create Procedure SelectVerificarLoginEmail
     @login varchar(20),
@@ -120,7 +210,7 @@ begin
 	from tblUsuario
 	WHERE login_usuario = @login OR email_usuario = @email
 end
-
+GO
 Create Procedure InsertInscrever
 @tipo_usu int,
 @nome varchar (30),
@@ -134,8 +224,7 @@ as
 begin
 	insert into tblUsuario(cod_tipo,nome_usuario,login_usuario,email_usuario,cel_usuario,pais_usuario,senha_usuario,data_criacao) values (@tipo_usu,@nome, @login, @email, @cel, @pais, @senha, @data);
 end
-
-
+GO
 /*Create procedure SelectCodTipo */
 Create procedure SelectCodTipo
 @codUsuarioConectado int
@@ -145,10 +234,3 @@ begin
 	from tblUsuario
 	WHERE cod_usuario = @codUsuarioConectado
 end
-
-
-select * from tblUsuario
-
-Update tblUsuario set cod_tipo=3 where cod_usuario=7
-
-Delete from tblUsuario where cod_usuario = 11
