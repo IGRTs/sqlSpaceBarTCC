@@ -156,3 +156,68 @@ CREATE PROCEDURE CheckUserHasLiked
 AS
     SELECT COUNT(*) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
 GO
+CREATE PROCEDURE GetAuthorPost
+    @postId int
+AS
+    -- select the cod_usuario from tblUsuario where the cod_usuario equals to the creator of an specific post --
+    SELECT cod_usuario FROM tblPost WHERE cod_post = @postId
+GO
+CREATE PROCEDURE GetUserInformation
+    @userId int
+AS
+    SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+GO
+CREATE PROCEDURE DeleteLike
+    @postId int,
+    @userId int
+AS
+    DELETE FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+GO
+CREATE PROCEDURE AddLike
+    @postId int,
+    @userId int
+AS
+    INSERT INTO tblPostagemCurtidas (tblPostagemCurtidas_cod_post, tblPostagemCurtidas_cod_usuario) VALUES (@postId, @userId)
+GO
+CREATE PROCEDURE GetAllInfoAndPostsByAuthor
+    @postAuthorID int
+AS
+    SELECT * FROM tblPost INNER JOIN tblUsuario tU ON tU.cod_usuario = tblPost.cod_usuario WHERE tblPost.[cod_usuario] = @postAuthorID
+GO
+CREATE PROCEDURE GetuserInformation
+    @userId int
+AS
+    SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+GO
+CREATE PROCEDURE GetQuantityFollowing
+    @userId int
+AS
+    SELECT COUNT(*) AS FollowingCount FROM tblSeguidores WHERE id_usuario_seguidor = @userId
+GO
+CREATE PROCEDURE GetQuantityFollowers
+    @userId int
+AS
+    SELECT COUNT(*) AS FollowersCount FROM tblSeguidores WHERE id_usuario_alvo = @userId
+GO
+CREATE PROCEDURE FollowUser
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    INSERT INTO tblSeguidores (id_usuario_seguidor,id_usuario_alvo) VALUES (@usuario_seguidor, @usuario_alvo)
+GO
+
+-- create a procedure that verifies if a seguidor_alvo is already being followed by the logged user
+ --
+CREATE PROCEDURE VerifyIfUserIsAlreadyBeingFollowed
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    -- verifica se o usuario seguidor (logado) segue o usuario alvo (perfil desejado) --
+    SELECT COUNT(id_usuario_seguidor) FROM tblSeguidores WHERE id_usuario_alvo = @usuario_alvo AND id_usuario_seguidor = @usuario_seguidor
+GO
+CREATE PROCEDURE UnfollowUser
+    @usuario_seguidor int,
+    @usuario_alvo int
+AS
+    DELETE FROM tblSeguidores WHERE id_usuario_seguidor = @usuario_seguidor AND id_usuario_alvo = @usuario_alvo
+GO
