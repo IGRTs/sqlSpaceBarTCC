@@ -16,9 +16,9 @@ create table tblUsuario
 	cod_tipo int,
 	nome_usuario varchar(30),
 	login_usuario varchar(20),
-	senha_usuario varchar(10),
+	senha_usuario varchar(100),
 	email_usuario varchar(30),
-	pais_usuario char(2),
+	pais_usuario varchar(30),
 	cel_usuario varchar(13),
 	icon_usuario varbinary(max),
 	imgfundo_usuario varbinary (max),
@@ -29,11 +29,6 @@ create table tblUsuario
 	profissao varchar(20),
 	img_comprovante varbinary (max),
 	img_comprovante2 varbinary (max),
-
-	/*criador de conteúdo*/
-	data_nasc date,
-	genero varchar(10),
-
 	foreign key (cod_tipo) references tipo_usuario
 );
 GO
@@ -88,20 +83,21 @@ create table tblDenuncia
 );
 GO
 SET IDENTITY_INSERT tipo_usuario ON;
-GO
-insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuário comum')
+
+insert into tipo_usuario(cod_tipo,descricao) values(1, 'Usuario comum')
 insert into tipo_usuario(cod_tipo,descricao) values(2, 'Criador de conteúdo')
 insert into tipo_usuario(cod_tipo,descricao) values(3, 'Verificado')
-insert into tipo_usuario(cod_tipo,descricao) values(4, 'ADM')
-GO
+insert into tipo_usuario(cod_tipo,descricao) values(4, 'Verificado/criador de conteúdo')
+insert into tipo_usuario(cod_tipo,descricao) values(5, 'ADM')
 
 create table tblPostagemCurtidas
 (
     tblPostagemCurtidas_cod_usuario int,
+
     tblPostagemCurtidas_cod_post int,
     foreign key (tblPostagemCurtidas_cod_usuario) references tblUsuario,
     foreign key (tblPostagemCurtidas_cod_post) references tblPost
-)
+);
 GO
 -- pega todos os cod_post em ordem crescente
 CREATE PROCEDURE GetCodPostagensCrescente
@@ -109,7 +105,7 @@ AS
     SELECT cod_post FROM tblPost ORDER BY cod_post ASC
 GO
 
--- pega todo o conteúdo de um post junto com as informações de quem o criou
+-- pega todo o conteÃºdo de um post junto com as informaÃ§Ãµes de quem o criou
 CREATE PROCEDURE GetPostAndAuthor
 AS
     SELECT * from tblPost INNER JOIN tblUsuario tU on tU.cod_usuario = tblPost.cod_usuario
@@ -122,7 +118,7 @@ AS
 CREATE PROCEDURE GetPost
 AS
     SELECT * FROM tblPost
--- verificar se um post especifico é verificado (true ou false)
+-- verificar se um post especifico Ã© verificado (true ou false)
 
 CREATE PROCEDURE GetPostVerified
     @cod_post int
@@ -190,8 +186,7 @@ AS
     INSERT INTO tblSeguidores (id_usuario_seguidor,id_usuario_alvo) VALUES (@usuario_seguidor, @usuario_alvo)
 GO
 
--- create a procedure that verifies if a seguidor_alvo is already being followed by the logged user
- --
+-- verifica se o seguidor_alvo ja está sendo seguindo pelo usuário logado
 CREATE PROCEDURE VerifyIfUserIsAlreadyBeingFollowed
     @usuario_seguidor int,
     @usuario_alvo int
@@ -205,3 +200,37 @@ CREATE PROCEDURE UnfollowUser
 AS
     DELETE FROM tblSeguidores WHERE id_usuario_seguidor = @usuario_seguidor AND id_usuario_alvo = @usuario_alvo
 GO
+--procedure inscrever--
+Create Procedure SelectVerificarLoginEmail
+    @login varchar(20),
+    @email varchar(30)
+as
+begin
+	select login_usuario, email_usuario
+	from tblUsuario
+	WHERE login_usuario = @login OR email_usuario = @email
+end
+GO
+Create Procedure InsertInscrever
+@tipo_usu int,
+@nome varchar (30),
+@login varchar(20),
+@email varchar(30),
+@cel varchar (13),
+@pais varchar(30),
+@senha varchar (100),
+@data date
+as
+begin
+	insert into tblUsuario(cod_tipo,nome_usuario,login_usuario,email_usuario,cel_usuario,pais_usuario,senha_usuario,data_criacao) values (@tipo_usu,@nome, @login, @email, @cel, @pais, @senha, @data);
+end
+GO
+/*Create procedure SelectCodTipo */
+Create procedure SelectCodTipo
+@codUsuarioConectado int
+as
+begin
+	select cod_tipo
+	from tblUsuario
+	WHERE cod_usuario = @codUsuarioConectado
+end
