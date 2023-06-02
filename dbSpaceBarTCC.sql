@@ -1,7 +1,7 @@
 CREATE DATABASE SpaceBar
 GO
 
-Use SpaceBar		
+Use SpaceBar
 GO
 
 create table tipo_usuario
@@ -12,24 +12,25 @@ create table tipo_usuario
 GO
 create table tblUsuario
 (
-	cod_usuario int primary key identity,
-	cod_tipo int,
-	nome_usuario varchar(30),
-	login_usuario varchar(20),
-	senha_usuario varchar(100),
-	email_usuario varchar(30),
-	pais_usuario varchar(30),
-	cel_usuario varchar(13),
-	icon_usuario varbinary(max),
-	imgfundo_usuario varbinary (max),
-	data_criacao date not null,
-	bio_usuario varchar(150),
+    cod_usuario int primary key identity,
+    cod_tipo int,
+    nome_usuario varchar(30),
+    login_usuario varchar(20),
+    senha_usuario varchar(100),
+    email_usuario varchar(30),
+    pais_usuario varchar(30),
+    cel_usuario varchar(13),
+    icon_usuario varbinary(max),
+    imgfundo_usuario varbinary (max),
+    data_criacao date not null,
+    bio_usuario varchar(150),
 
-	/*verificado*/
-	profissao varchar(20),
-	img_comprovante varbinary (max),
-	img_comprovante2 varbinary (max),
-	foreign key (cod_tipo) references tipo_usuario
+    --verificado--
+    status_verificado varchar(20) default 'nenhum' not null,
+    profissao varchar(20),
+    img_comprovante varbinary (max),
+    foreign key (cod_tipo) references tipo_usuario,
+    check ([status_verificado]='nenhum' OR [status_verificado]='aceito' OR [status_verificado]='pendente' OR [status_verificado]='negado')
 );
 GO
 create table tblPost
@@ -96,94 +97,136 @@ create table tblPostagemCurtidas
 
     tblPostagemCurtidas_cod_post int,
     foreign key (tblPostagemCurtidas_cod_usuario) references tblUsuario,
-    foreign key (tblPostagemCurtidas_cod_post) references tblPost
+    foreign key (tblPostagemCurtidas_cod_post) references tblPost,
+    data_curtida date default GETDATE()
 );
 GO
 -- pega todos os cod_post em ordem crescente
 CREATE PROCEDURE GetCodPostagensCrescente
 AS
+begin
     SELECT cod_post FROM tblPost ORDER BY cod_post ASC
+end
 GO
 
 -- pega todo o conteÃºdo de um post junto com as informaÃ§Ãµes de quem o criou
 CREATE PROCEDURE GetPostAndAuthor
 AS
+begin
     SELECT * from tblPost INNER JOIN tblUsuario tU on tU.cod_usuario = tblPost.cod_usuario
+end
 GO
 -- obtem a quantidade de posts que tem no banco de dados inteiro
 CREATE PROCEDURE GetPostsQuantity
 AS
+begin
     SELECT COUNT(cod_post) FROM tblPost
+end
+GO
 -- obtem todos os dados de todos os posts
 CREATE PROCEDURE GetPost
 AS
+begin
     SELECT * FROM tblPost
--- verificar se um post especifico Ã© verificado (true ou false)
+end
+GO
 
+-- verificar se um post especifico Ã© verificado (true ou false)
 CREATE PROCEDURE GetPostVerified
     @cod_post int
 AS
+begin
     SELECT verificado FROM tblPost WHERE cod_post = @cod_post
+end
 GO
 CREATE PROCEDURE GetPostQuantityLikes
     @postID int
 AS
+begin
     SELECT COUNT(tblPostagemCurtidas_cod_usuario) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postID
+end
+GO
+CREATE PROCEDURE GetPostById
+    @postId int
+AS
+    BEGIN
+        SELECT * FROM tblPost WHERE cod_post = @postId
+    END
+GO
+CREATE PROCEDURE GetPostAndAuthorById
+    @postId int
+AS
+    BEGIN
+        SELECT * FROM tblPost INNER JOIN tblUsuario tU on tU.cod_usuario = tblPost.cod_usuario WHERE tblPost.cod_post = @postId
+    end
 GO
 CREATE PROCEDURE CheckUserHasLiked
     @postId int,
     @userId int
 AS
+begin
     SELECT COUNT(*) FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+end
 GO
 CREATE PROCEDURE GetAuthorPost
     @postId int
 AS
+begin
     -- select the cod_usuario from tblUsuario where the cod_usuario equals to the creator of an specific post --
     SELECT cod_usuario FROM tblPost WHERE cod_post = @postId
-GO
-CREATE PROCEDURE GetUserInformation
-    @userId int
-AS
-    SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+end
 GO
 CREATE PROCEDURE DeleteLike
     @postId int,
     @userId int
 AS
+begin
     DELETE FROM tblPostagemCurtidas WHERE tblPostagemCurtidas_cod_post = @postId AND tblPostagemCurtidas_cod_usuario = @userId
+end
 GO
 CREATE PROCEDURE AddLike
     @postId int,
     @userId int
 AS
-    INSERT INTO tblPostagemCurtidas (tblPostagemCurtidas_cod_post, tblPostagemCurtidas_cod_usuario) VALUES (@postId, @userId)
+begin
+    INSERT INTO tblPostagemCurtidas (tblPostagemCurtidas_cod_post, tblPostagemCurtidas_cod_usuario, data_curtida) VALUES (@postId, @userId, GETDATE())
+end
 GO
 CREATE PROCEDURE GetAllInfoAndPostsByAuthor
     @postAuthorID int
 AS
+begin
     SELECT * FROM tblPost INNER JOIN tblUsuario tU ON tU.cod_usuario = tblPost.cod_usuario WHERE tblPost.[cod_usuario] = @postAuthorID
+end
 GO
 CREATE PROCEDURE GetuserInformation
     @userId int
 AS
+begin
     SELECT * FROM tblUsuario WHERE cod_usuario = @userId
+end
 GO
 CREATE PROCEDURE GetQuantityFollowing
     @userId int
 AS
+begin
     SELECT COUNT(*) AS FollowingCount FROM tblSeguidores WHERE id_usuario_seguidor = @userId
+end
 GO
 CREATE PROCEDURE GetQuantityFollowers
     @userId int
 AS
+begin
     SELECT COUNT(*) AS FollowersCount FROM tblSeguidores WHERE id_usuario_alvo = @userId
+end
 GO
 CREATE PROCEDURE FollowUser
     @usuario_seguidor int,
     @usuario_alvo int
 AS
+begin
     INSERT INTO tblSeguidores (id_usuario_seguidor,id_usuario_alvo) VALUES (@usuario_seguidor, @usuario_alvo)
+end
 GO
 
 -- verifica se o seguidor_alvo ja está sendo seguindo pelo usuário logado
@@ -191,14 +234,18 @@ CREATE PROCEDURE VerifyIfUserIsAlreadyBeingFollowed
     @usuario_seguidor int,
     @usuario_alvo int
 AS
+begin
     -- verifica se o usuario seguidor (logado) segue o usuario alvo (perfil desejado) --
     SELECT COUNT(id_usuario_seguidor) FROM tblSeguidores WHERE id_usuario_alvo = @usuario_alvo AND id_usuario_seguidor = @usuario_seguidor
+end
 GO
 CREATE PROCEDURE UnfollowUser
     @usuario_seguidor int,
     @usuario_alvo int
 AS
+begin
     DELETE FROM tblSeguidores WHERE id_usuario_seguidor = @usuario_seguidor AND id_usuario_alvo = @usuario_alvo
+end
 GO
 --procedure inscrever--
 Create Procedure SelectVerificarLoginEmail
@@ -243,3 +290,74 @@ As
 Begin
 	Select * from tblUsuario where login_usuario = @loguser and senha_usuario=@senhauser
 END
+GO
+CREATE PROCEDURE LoginUsuario
+    @email_usuario varchar(30)
+AS
+    BEGIN
+       SELECT * FROM tblUsuario WHERE email_usuario = @email_usuario
+    END
+GO
+-- irá contar quantas vezes determinada postagem aparece na tabela de relações
+CREATE PROCEDURE GetCommentsQuantity
+    @PostId  int
+AS
+    BEGIN
+        SELECT COUNT(*) AS quantidade_comentarios FROM tblComentarios WHERE cod_post = @PostId
+    end
+GO
+-- irá inserir um comentario na tabela de comentarios
+CREATE PROCEDURE InsertComment
+    @cod_post int,
+    @cod_usuario int,
+    @comentario varchar(200)
+AS
+    BEGIN
+        INSERT INTO tblComentarios (cod_post, cod_usuario, conteudo_comentario) VALUES (@cod_post, @cod_usuario, @comentario)
+    end
+CREATE PROCEDURE GetComments
+    @PostId  int
+AS
+    BEGIN
+        SELECT * FROM tblComentarios WHERE cod_post = @PostId
+    end
+GO
+CREATE PROCEDURE Comentar
+    @cod_post int,
+    @cod_usuario int,
+    @comentario varchar(200)
+AS
+    BEGIN
+        INSERT INTO tblComentarios (cod_post, cod_usuario, conteudo_comentario,  data_comentario) VALUES (@cod_post, @cod_usuario, @comentario, GETDATE())
+    end
+GO
+-- conta a quantidade de postagens criadas no ultimo dia --
+CREATE PROCEDURE CountCreatedPosts
+AS
+    BEGIN
+        SELECT COUNT(*) AS quantidade_postagens FROM tblPost WHERE data_post > DATEADD(HOUR, -24, GETDATE())
+    end
+GO
+-- conta a quantidade de usuários registrados no ultimo dia --
+CREATE PROCEDURE CountRegisteredUsers
+AS
+    BEGIN
+        SELECT COUNT(*) AS quantidade_usuarios FROM tblUsuario WHERE data_criacao > DATEADD(HOUR, -24, GETDATE())
+    end
+GO
+
+-- conta a quantidade de comentários criados no ultimo dia --
+CREATE PROCEDURE CountCreatedComments
+AS
+    BEGIN
+        SELECT COUNT(*) AS quantidade_comentarios FROM tblComentarios WHERE data_comentario > DATEADD(HOUR, -24, GETDATE())
+    end
+GO
+
+-- conta a quantidade de curtidas criadas no geral no  ultimo dia --
+CREATE PROCEDURE CountCreatedLikes
+AS
+    BEGIN
+        SELECT COUNT(*) AS quantidade_curtidas FROM tblPostagemCurtidas WHERE data_curtida > DATEADD(HOUR, -24, GETDATE())
+    end
+GO
