@@ -25,13 +25,14 @@ create table tblUsuario
     data_criacao date not null,
     bio_usuario varchar(150),
 
-    --verificado--
-    status_verificado varchar(20) default 'nenhum' not null,
-    profissao varchar(20),
-    img_comprovante varbinary (max),
-    foreign key (cod_tipo) references tipo_usuario,
-    check ([status_verificado]='nenhum' OR [status_verificado]='aceito' OR [status_verificado]='pendente' OR [status_verificado]='negado')
+	/*verificado*/
+	status_verificado varchar(20) default 'nenhum' not null,
+	profissao varchar(20),
+	img_comprovante varbinary (max),
+	foreign key (cod_tipo) references tipo_usuario,
+	check ([status_verificado]='nenhum' OR [status_verificado]='aceito' OR [status_verificado]='pendente' OR [status_verificado]='negado')
 );
+
 GO
 create table tblPost
 (
@@ -40,8 +41,6 @@ create table tblPost
 	titulo_post varchar(300) not null,
 	texto_post varchar(100),
 	img_post VARBINARY(max),
-	img_post2 VARBINARY(max),
-	curtidas_post int,
 	comentarios_post int,
 	data_post datetime not null,
 	verificado bit default 0 not null,
@@ -284,8 +283,8 @@ end
 GO
 --  procedure login--
 create procedure spacelogin
-	@loguser varchar(20),
-	@senhauser varchar(10)
+	@login varchar(20),
+	@senha varchar(10)
 As
 Begin
 	Select * from tblUsuario where login_usuario = @loguser and senha_usuario=@senhauser
