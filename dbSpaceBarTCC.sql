@@ -287,7 +287,7 @@ create procedure spacelogin
 	@senha varchar(10)
 As
 Begin
-	Select * from tblUsuario where login_usuario = @loguser and senha_usuario=@senhauser
+	Select * from tblUsuario where login_usuario = @login and senha_usuario=@senha
 END
 GO
 CREATE PROCEDURE LoginUsuario
@@ -358,5 +358,28 @@ CREATE PROCEDURE CountCreatedLikes
 AS
     BEGIN
         SELECT COUNT(*) AS quantidade_curtidas FROM tblPostagemCurtidas WHERE data_curtida > DATEADD(HOUR, -24, GETDATE())
+    end
+GO
+-- create a procedure that search for a login_usuario that is like what the user typed --
+CREATE PROCEDURE SearchLogin
+@login varchar(20)
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE login_usuario LIKE '%'+@login+'%'
+    end
+GO
+-- create a procedure that selects all user info where its "status_verificado" == 'pendente'
+CREATE PROCEDURE SelectVerificadoPendentes
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
+    end
+GO
+-- create a procedure that get the quantity of all posts created by a user --
+CREATE PROCEDURE GetPostsQntdByUser
+@userId int
+AS
+    BEGIN
+        SELECT COUNT(*) AS qntd_posts FROM tblPost WHERE cod_usuario = @userId
     end
 GO
