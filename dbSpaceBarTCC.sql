@@ -24,14 +24,18 @@ create table tblUsuario
     imgfundo_usuario varbinary (max),
     data_criacao date not null,
     bio_usuario varchar(150),
-
 	/*verificado*/
 	status_verificado varchar(20) default 'nenhum' not null,
+	mensagem_verificado varchar(300),
 	profissao varchar(20),
 	img_comprovante varbinary (max),
 	foreign key (cod_tipo) references tipo_usuario,
 	check ([status_verificado]='nenhum' OR [status_verificado]='aceito' OR [status_verificado]='pendente' OR [status_verificado]='negado')
 );
+
+Select * from tblUsuario
+
+Delete from tblUsuario
 
 GO
 create table tblPost
@@ -41,7 +45,6 @@ create table tblPost
 	titulo_post varchar(300) not null,
 	texto_post varchar(100),
 	img_post VARBINARY(max),
-	comentarios_post int,
 	data_post datetime not null,
 	verificado bit default 0 not null,
 	foreign key (cod_usuario) references tblUsuario,
@@ -67,19 +70,6 @@ create table tblSeguidores
 	primary key (indice_segui),
 	foreign key (id_usuario_seguidor) references tblUsuario,
 	foreign key (id_usuario_alvo) references tblUsuario
-);
-GO
-create table tblDenuncia
-(
-	cod_denuncia int identity,
-	usuario_denunciado int,
-	post_denunciado int,
-	comentario_denunciado int,
-	motivo varchar(255) not null,
-	status_denuncia varchar(20) default 'pendente' not null,
-	data_denuncia date not null,
-	primary key (cod_denuncia),
-	check ([status_denuncia]='ignorado' OR [status_denuncia]='resolvido' OR [status_denuncia]='pendente'),
 );
 GO
 SET IDENTITY_INSERT tipo_usuario ON;
@@ -283,11 +273,11 @@ end
 GO
 --  procedure login--
 create procedure spacelogin
-	@login varchar(20),
-	@senha varchar(10)
+	@loguser varchar(20),
+	@senhauser varchar(10)
 As
 Begin
-	Select * from tblUsuario where login_usuario = @login and senha_usuario=@senha
+	Select * from tblUsuario where login_usuario = @loguser and senha_usuario=@senhauser
 END
 GO
 CREATE PROCEDURE LoginUsuario
