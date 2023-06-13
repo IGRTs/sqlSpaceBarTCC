@@ -304,6 +304,7 @@ AS
     BEGIN
         INSERT INTO tblComentarios (cod_post, cod_usuario, conteudo_comentario) VALUES (@cod_post, @cod_usuario, @comentario)
     end
+GO
 CREATE PROCEDURE GetComments
     @PostId  int
 AS
