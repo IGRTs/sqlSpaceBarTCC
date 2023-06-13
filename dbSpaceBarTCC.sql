@@ -26,11 +26,16 @@ create table tblUsuario
     bio_usuario varchar(150),
 	/*verificado*/
 	status_verificado varchar(20) default 'nenhum' not null,
+	mensagem_verificado varchar(300),
 	profissao varchar(20),
 	img_comprovante varbinary (max),
 	foreign key (cod_tipo) references tipo_usuario,
 	check ([status_verificado]='nenhum' OR [status_verificado]='aceito' OR [status_verificado]='pendente' OR [status_verificado]='negado')
 );
+
+Select * from tblUsuario
+
+Delete from tblUsuario
 
 GO
 create table tblPost
@@ -268,11 +273,11 @@ end
 GO
 --  procedure login--
 create procedure spacelogin
-	@login varchar(20),
-	@senha varchar(10)
+	@loguser varchar(20),
+	@senhauser varchar(10)
 As
 Begin
-	Select * from tblUsuario where login_usuario = @login and senha_usuario=@senha
+	Select * from tblUsuario where login_usuario = @loguser and senha_usuario=@senhauser
 END
 GO
 CREATE PROCEDURE LoginUsuario
