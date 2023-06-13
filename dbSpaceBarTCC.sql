@@ -360,7 +360,7 @@ AS
         SELECT COUNT(*) AS quantidade_curtidas FROM tblPostagemCurtidas WHERE data_curtida > DATEADD(HOUR, -24, GETDATE())
     end
 GO
--- create a procedure that search for a login_usuario that is like what the user typed --
+
 CREATE PROCEDURE SearchLogin
 @login varchar(20)
 AS
@@ -368,18 +368,52 @@ AS
         SELECT * FROM tblUsuario WHERE login_usuario LIKE '%'+@login+'%'
     end
 GO
--- create a procedure that selects all user info where its "status_verificado" == 'pendente'
+
 CREATE PROCEDURE SelectVerificadoPendentes
 AS
     BEGIN
         SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
     end
 GO
--- create a procedure that get the quantity of all posts created by a user --
+
 CREATE PROCEDURE GetPostsQntdByUser
 @userId int
 AS
     BEGIN
         SELECT COUNT(*) AS qntd_posts FROM tblPost WHERE cod_usuario = @userId
+    end
+GO
+
+CREATE PROCEDURE InsertNegado
+@codUsuario int
+AS
+    BEGIN
+        UPDATE tblUsuario SET status_verificado = 'negado' WHERE cod_usuario = @codUsuario
+    end
+GO
+CREATE PROCEDURE InsertAceito
+@codUsuario int
+AS
+    BEGIN
+        UPDATE tblUsuario SET status_verificado = 'aceito' WHERE cod_usuario = @codUsuario
+    end
+GO
+
+CREATE PROCEDURE SelectVerificadoAceito
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE status_verificado = 'aceito'
+    end
+GO
+CREATE PROCEDURE SelectVerificadoNegado
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE status_verificado = 'negado'
+    end
+GO
+CREATE PROCEDURE SelectVerificadoPendente
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
     end
 GO
