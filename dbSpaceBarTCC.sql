@@ -393,16 +393,22 @@ GO
 CREATE PROCEDURE SelectVerificadoAceito
 AS
     BEGIN
-        SELECT * FROM tblUsuario WHERE status_verificado = 'aceito'
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'aceito'
     end
 GO
 CREATE PROCEDURE SelectVerificadoNegado
 AS
     BEGIN
-        SELECT * FROM tblUsuario WHERE status_verificado = 'negado'
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'negado'
     end
 GO
 CREATE PROCEDURE SelectVerificadoPendente
+AS
+    BEGIN
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'pendente'
+    end
+GO
+CREATE PROCEDURE SelectAllVerificadoPendente
 AS
     BEGIN
         SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
@@ -432,3 +438,9 @@ AS
         SELECT data_criacao, COUNT(*) AS QuantidadeUsuarios FROM tblUsuario GROUP BY data_criacao ORDER BY data_criacao ASC
     end
 GO
+CREATE PROCEDURE PesquisarUsuario
+@login_usuario VARCHAR(50)
+AS
+BEGIN
+    SELECT * FROM tblUsuario WHERE login_usuario LIKE '%' + @login_usuario + '%';
+END
