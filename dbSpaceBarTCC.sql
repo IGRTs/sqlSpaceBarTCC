@@ -408,3 +408,27 @@ AS
         SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
     end
 GO
+CREATE PROCEDURE ObterQuantidadeUsuariosPorHierarquia
+AS
+BEGIN
+    SELECT
+        COUNT(*) AS QuantidadeUsuarios,
+        CASE cod_tipo
+            WHEN 1 THEN 'Usuario comum'
+            WHEN 2 THEN 'Criador de conteúdo'
+            WHEN 3 THEN 'Verificado'
+            WHEN 4 THEN 'Verificado/criador de conteúdo'
+            WHEN 5 THEN 'ADM'
+        END AS Hierarquia
+    FROM
+        tblUsuario
+    GROUP BY
+        cod_tipo;
+END
+GO
+CREATE PROCEDURE ObterQuantidadeUsuariosCriadosPorData
+AS
+    BEGIN
+        SELECT data_criacao, COUNT(*) AS QuantidadeUsuarios FROM tblUsuario GROUP BY data_criacao ORDER BY data_criacao ASC
+    end
+GO
