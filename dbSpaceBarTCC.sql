@@ -303,6 +303,7 @@ AS
     BEGIN
         INSERT INTO tblComentarios (cod_post, cod_usuario, conteudo_comentario) VALUES (@cod_post, @cod_usuario, @comentario)
     end
+GO
 CREATE PROCEDURE GetComments
     @PostId  int
 AS
@@ -349,7 +350,7 @@ AS
         SELECT COUNT(*) AS quantidade_curtidas FROM tblPostagemCurtidas WHERE data_curtida > DATEADD(HOUR, -24, GETDATE())
     end
 GO
--- create a procedure that search for a login_usuario that is like what the user typed --
+
 CREATE PROCEDURE SearchLogin
 @login varchar(20)
 AS
@@ -357,14 +358,14 @@ AS
         SELECT * FROM tblUsuario WHERE login_usuario LIKE '%'+@login+'%'
     end
 GO
--- create a procedure that selects all user info where its "status_verificado" == 'pendente'
+
 CREATE PROCEDURE SelectVerificadoPendentes
 AS
     BEGIN
         SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
     end
 GO
--- create a procedure that get the quantity of all posts created by a user --
+
 CREATE PROCEDURE GetPostsQntdByUser
 @userId int
 AS
@@ -372,3 +373,73 @@ AS
         SELECT COUNT(*) AS qntd_posts FROM tblPost WHERE cod_usuario = @userId
     end
 GO
+
+CREATE PROCEDURE InsertNegado
+@codUsuario int
+AS
+    BEGIN
+        UPDATE tblUsuario SET status_verificado = 'negado' WHERE cod_usuario = @codUsuario
+    end
+GO
+CREATE PROCEDURE InsertAceito
+@codUsuario int
+AS
+    BEGIN
+        UPDATE tblUsuario SET status_verificado = 'aceito' WHERE cod_usuario = @codUsuario
+    end
+GO
+
+CREATE PROCEDURE SelectVerificadoAceito
+AS
+    BEGIN
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'aceito'
+    end
+GO
+CREATE PROCEDURE SelectVerificadoNegado
+AS
+    BEGIN
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'negado'
+    end
+GO
+CREATE PROCEDURE SelectVerificadoPendente
+AS
+    BEGIN
+        SELECT count(cod_usuario) FROM tblUsuario WHERE status_verificado = 'pendente'
+    end
+GO
+CREATE PROCEDURE SelectAllVerificadoPendente
+AS
+    BEGIN
+        SELECT * FROM tblUsuario WHERE status_verificado = 'pendente'
+    end
+GO
+CREATE PROCEDURE ObterQuantidadeUsuariosPorHierarquia
+AS
+BEGIN
+    SELECT
+        COUNT(*) AS QuantidadeUsuarios,
+        CASE cod_tipo
+            WHEN 1 THEN 'Usuario comum'
+            WHEN 2 THEN 'Criador de conteúdo'
+            WHEN 3 THEN 'Verificado'
+            WHEN 4 THEN 'Verificado/criador de conteúdo'
+            WHEN 5 THEN 'ADM'
+        END AS Hierarquia
+    FROM
+        tblUsuario
+    GROUP BY
+        cod_tipo;
+END
+GO
+CREATE PROCEDURE ObterQuantidadeUsuariosCriadosPorData
+AS
+    BEGIN
+        SELECT data_criacao, COUNT(*) AS QuantidadeUsuarios FROM tblUsuario GROUP BY data_criacao ORDER BY data_criacao ASC
+    end
+GO
+CREATE PROCEDURE PesquisarUsuario
+@login_usuario VARCHAR(50)
+AS
+BEGIN
+    SELECT * FROM tblUsuario WHERE login_usuario LIKE '%' + @login_usuario + '%';
+END
