@@ -304,6 +304,18 @@ AS
         INSERT INTO tblComentarios (cod_post, cod_usuario, conteudo_comentario) VALUES (@cod_post, @cod_usuario, @comentario)
     end
 GO
+CREATE PROCEDURE InsertPost
+    @titulo VARCHAR(300),
+    @texto VARCHAR(100),
+    @data DATETIME,
+    @imagem VARBINARY(MAX),
+    @id INT
+AS
+BEGIN
+    INSERT INTO tblPost (titulo_post, texto_post, data_post, img_post, cod_usuario)
+    VALUES (@titulo, @texto, @data, @imagem, @id)
+END
+GO
 CREATE PROCEDURE GetComments
     @PostId  int
 AS
