@@ -387,20 +387,22 @@ AS
 GO
 
 CREATE PROCEDURE InsertNegado
-@codUsuario int
+@codUsuario int,
+@mensagem varchar(300)
+
 AS
     BEGIN
-        UPDATE tblUsuario SET status_verificado = 'negado' WHERE cod_usuario = @codUsuario
+        UPDATE tblUsuario SET status_verificado = 'negado', mensagem_verificado = @mensagem WHERE cod_usuario = @codUsuario
     end
 GO
 CREATE PROCEDURE InsertAceito
-@codUsuario int
+@codUsuario int,
+@mensagem varchar(300)
 AS
     BEGIN
-        UPDATE tblUsuario SET status_verificado = 'aceito' WHERE cod_usuario = @codUsuario
+        UPDATE tblUsuario SET status_verificado = 'aceito', mensagem_verificado = @mensagem WHERE cod_usuario = @codUsuario
     end
 GO
-
 CREATE PROCEDURE SelectVerificadoAceito
 AS
     BEGIN
