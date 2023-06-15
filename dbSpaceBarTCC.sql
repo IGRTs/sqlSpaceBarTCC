@@ -306,14 +306,14 @@ AS
 GO
 CREATE PROCEDURE InsertPost
     @titulo VARCHAR(300),
-    @texto VARCHAR(100),
+    @texto VARCHAR(100)=null ,
     @data DATETIME,
-    @imagem VARBINARY(MAX),
+    @imagem NVARCHAR(MAX)=null,
     @id INT
 AS
 BEGIN
     INSERT INTO tblPost (titulo_post, texto_post, data_post, img_post, cod_usuario)
-    VALUES (@titulo, @texto, @data, @imagem, @id)
+     VALUES (@titulo, @texto, @data, CONVERT(VARBINARY(MAX), @imagem), @id)
 END
 GO
 CREATE PROCEDURE GetComments
