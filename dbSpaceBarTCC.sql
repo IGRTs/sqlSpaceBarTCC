@@ -455,3 +455,12 @@ AS
 BEGIN
     SELECT * FROM tblUsuario WHERE login_usuario LIKE '%' + @login_usuario + '%';
 END
+GO
+CREATE PROCEDURE VerificarPostagem
+@codPost int
+AS
+    BEGIN
+        --porque a procedure abaixo está com problemas? --
+        UPDATE tblPost SET verificado = 1 WHERE cod_post = @codPost;
+    end
+GO
