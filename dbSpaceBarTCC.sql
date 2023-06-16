@@ -64,10 +64,8 @@ create table tblComentarios
 GO
 create table tblSeguidores
 (
-	indice_segui int identity,
 	id_usuario_seguidor int not null,
 	id_usuario_alvo int not null,
-	primary key (indice_segui),
 	foreign key (id_usuario_seguidor) references tblUsuario,
 	foreign key (id_usuario_alvo) references tblUsuario
 );
@@ -464,5 +462,52 @@ AS
     BEGIN
         --porque a procedure abaixo está com problemas? --
         UPDATE tblPost SET verificado = 1 WHERE cod_post = @codPost;
+    end
+GO
+CREATE PROCEDURE InvalidarPostagem
+@codPost int
+AS
+    BEGIN
+            UPDATE tblPost SET verificado = 0 WHERE cod_post = @codPost;
+    END
+GO
+CREATE PROCEDURE AtualizarCelular
+@cel varchar(13),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set cel_usuario=@cel where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarEmail
+@email varchar(50),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set email_usuario=@email where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarNomeUsuario
+@nomeUsuario varchar(20),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set nome_usuario=@nomeUsuario where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarSenha
+@novaSenha varchar(100),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set senha_usuario=@novaSenha where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarPais
+@pais varchar(30),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set pais_usuario=@pais where cod_usuario = @codUsuarioConectado
     end
 GO
