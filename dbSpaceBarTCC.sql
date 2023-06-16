@@ -511,3 +511,42 @@ AS
         Update tblUsuario set pais_usuario=@pais where cod_usuario = @codUsuarioConectado
     end
 GO
+CREATE PROCEDURE SelecionarSelos
+@codUsuarioConectado int
+AS
+    BEGIN
+        SELECT cod_tipo from tblUsuario where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE InserirImagemFundo
+@imgFundo varbinary(max),
+@codUsuarioConectado int
+AS
+BEGIN
+    UPDATE tblUsuario SET imgfundo_usuario = @imgfundo WHERE cod_usuario = @codUsuarioConectado
+end
+GO
+CREATE PROCEDURE InserirImagemPerfil
+@icon varbinary(max),
+@codUsuarioConectado int
+AS
+    BEGIN
+        UPDATE tblUsuario SET icon_usuario = @icon WHERE cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarNome
+@codUsuarioConectado int,
+@nome varchar(30)
+AS
+    BEGIN
+        Update tblUsuario set nome_usuario=@nome where cod_usuario = @codUsuarioConectado
+    end
+GO
+CREATE PROCEDURE AtualizarBioUsuario
+@bio varchar(150),
+@codUsuarioConectado int
+AS
+    BEGIN
+        Update tblUsuario set bio_usuario=@bio where cod_usuario = @codUsuarioConectado
+    end
+GO
